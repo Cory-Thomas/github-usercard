@@ -1,8 +1,21 @@
+import axios from 'axios';
+
 /*
   STEP 1: using axios, send a GET request to the following URL
     (replacing the placeholder with your Github name):
     https://api.github.com/users/<your name>
 */
+const cards = document.querySelector('.cards')
+
+axios.get('https://api.github.com/users/Cory-Thomas')
+  .then( response => {
+    const card = createCard(response)
+    cards.appendChild(card)
+  })
+  .catch( error => {
+    debugger;
+    return console.log(error)
+  })
 
 /*
   STEP 2: Inspect and study the data coming back, this is YOUR
@@ -17,6 +30,8 @@
     and append the returned markup to the DOM as a child of .cards
 */
 
+
+
 /*
   STEP 5: Now that you have your own card getting added to the DOM, either
     follow this link in your browser https://api.github.com/users/<Your github name>/followers,
@@ -28,7 +43,27 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  'tetondan',
+  'dustinmyers',
+  'justsml',
+  'luishrd',
+  'bigknell'
+];
+
+followersArray.forEach( follower => {
+  
+  axios.get(`https://api.github.com/users/${follower}`)
+    .then( response => {
+    const card = createCard(response)
+    cards.appendChild(card)
+    })
+    .catch( error => {
+      debugger;
+      return console.log(error)
+    })
+})
+
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
@@ -49,6 +84,50 @@ const followersArray = [];
       </div>
     </div>
 */
+
+function createCard( userObj ){
+  const card = document.createElement('div')
+  const cardImg = document.createElement('img')
+  const cardInfo = document.createElement('div')
+  const cardName = document.createElement('h3')
+  const cardUsername = document.createElement('p')
+  const cardLocation = document.createElement('p')
+  const cardProfile = document.createElement('p')
+  const cardUserAddress = document.createElement('a')
+  const cardFollowers = document.createElement('p')
+  const cardFollowing = document.createElement('p')
+  const cardBio = document.createElement('p')
+
+  card.appendChild(cardImg)
+  card.appendChild(cardInfo)
+  cardInfo.appendChild(cardName)
+  cardInfo.appendChild(cardUsername)
+  cardInfo.appendChild(cardLocation)
+  cardInfo.appendChild(cardProfile)
+  cardInfo.appendChild(cardFollowers)
+  cardInfo.appendChild(cardFollowing)
+  cardInfo.appendChild(cardBio)
+
+  card.classList.add('card')
+  cardImg.src = userObj.data["avatar_url"];
+  cardInfo.classList.add('card-info')
+  cardName.classList.add('name')
+  cardName.textContent = userObj.data['name'];
+  cardUsername.classList.add('username')
+  cardUsername.textContent = userObj.data['login']
+  cardLocation.textContent = `Location: ${userObj.data['location']}`
+
+  cardProfile.textContent = 'Profile: '
+  cardProfile.appendChild(cardUserAddress) // for some reason the anchor tag does not appear unless I append the a tag right after filling in the p tag/parents content
+  cardUserAddress.href = userObj.data['html_url']
+  cardUserAddress.textContent = userObj.data['html_url']
+
+  cardFollowers.textContent = `Followers: ${userObj.data['followers']}`
+  cardFollowing.textContent = `Following: ${userObj.data['following']}`
+  cardBio.textContent = `Bio: ${userObj.data["bio"]}`
+
+  return card;
+}
 
 /*
   List of LS Instructors Github username's:
